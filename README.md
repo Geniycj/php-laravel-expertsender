@@ -28,5 +28,4 @@ php artisan vendor:publish --provider="ExpertSender\ExpertSenderServiceProvider"
 
 
 ### usage examples
-You can find usage examples i ExpertSenderExamples::class
-
+You can find usage examples in ExpertSenderExamples::class
