@@ -1,0 +1,23 @@
+{
+    "name": "smidu/php-laravel-expertsender",
+    "description": "Basic ExpertSender Service API for Laravel",
+    "type": "library",
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "^5.7|^6.0|^7.0",
+        "guzzlehttp/guzzle": "6.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maciej Śliwiński",
+            "email": "m@smid.pl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ExpertSender\\": "src/"
+        }
+    },
+    "version": "0.2"
+}
