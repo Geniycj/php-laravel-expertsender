@@ -39,4 +39,26 @@ class Error
     public static $propertyIdFieldIsNotInt = 'Property id field is not integer.';
 
     public static $missingPropertyValue = 'Missing property value field.';
+
+    public static $missingTableName = 'Missing table name field.';
+
+    public static $wrongTypeMultiDataArray = 'Rows to add type is not array.';
+
+    public static $wrongOneOfRowObject = 'One of rows to add is not Row::class object.';
+
+    public static $wrongOneOfDeleteColumnObject = 'One of rows to add is not delete Column::class object.';
+
+    public static $wrongTypeMultiDataOneRowArray = 'Columns in all rows to add should be array.';
+
+    public static $wrongAddColumnType = 'One of column object is not an instance of add Column:class.';
+
+    public static $missingColumnName = 'One of columns is missing name field.';
+
+    public static $missingColumnValue = 'One of columns is missing value field.';
+
+    public static $wrongTypeDeletePrimaryKeyColumns = 'Primary key columns is not array.';
+
+    public static $wrongOneOfWhereObject = 'One of search conditions is not Where::class object.';
+
+    public static $missingColumnOperator = 'Missing operator field.';
 }

@@ -2,12 +2,20 @@
 
 namespace ExpertSender;
 
+use Carbon\Carbon;
 use ExpertSender\Abstracts\IExpertSender;
 use ExpertSender\Requests\Event\DataField;
 use ExpertSender\Requests\Event\EventData;
+use ExpertSender\Requests\DataTable\Add\Row;
+use ExpertSender\Requests\DataTable\Add\Column as AddColumn;
+use ExpertSender\Requests\DataTable\Delete\Column as DeleteColumn;
 use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Abstracts\IExpertSenderExamples;
+use ExpertSender\Requests\DataTable\Search\Where;
+use ExpertSender\Requests\DataTable\AddDataTableRequest;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
+use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
+use ExpertSender\Requests\DataTable\SearchDataTableRequest;
 use ExpertSender\Requests\Subscriber\AddAndUpdate\Property;
 use ExpertSender\Requests\Subscriber\AddAndUpdate\SubscriberData;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
@@ -69,9 +77,7 @@ class ExpertSenderExamples implements IExpertSenderExamples
      */
     public function addEvent(): void
     {
-        $apiKey = $this->apiKey;
-
-        $request = new GetSubscriberRequest($apiKey, 'm@smid.pl');
+        $request = new GetSubscriberRequest($this->apiKey, 'm@smid.pl');
 
         $subscriber = $this->expertSender->getSubscriberLists($request);
 
@@ -80,7 +86,7 @@ class ExpertSenderExamples implements IExpertSenderExamples
         }
 
         $request = new AddEventRequest(
-            $apiKey,
+            $this->apiKey,
             new EventData(1, (int)$subscriber->Data->Id, [
                 new DataField('cart_sum', 22499, 'Number'),
                 new DataField('product_1_name', 'Nike Cortez Basic SL EP (GS) (BV0014-100)'),
@@ -92,6 +98,75 @@ class ExpertSenderExamples implements IExpertSenderExamples
         );
 
         $response = $this->expertSender->addEvent($request);
+
+        dd($response);
+    }
+
+    /**
+     * Add DataTable.
+     */
+    public function addDataTable(): void
+    {
+        $request = new AddDataTableRequest($this->apiKey, 'insert_test', [
+            new Row([
+                new AddColumn('id', 1),
+                new AddColumn('email', 'm@smid.pl'),
+                new AddColumn('date', Carbon::now())
+            ]),
+            new Row([
+                new AddColumn('id', 2),
+                new AddColumn('email', 'kontakt@smid.pl'),
+                new AddColumn('date', Carbon::now())
+            ])
+        ]);
+
+        $response = $this->expertSender->addDataTable($request);
+
+        dd($response);
+    }
+
+    /**
+     * Delete DataTable.
+     */
+    public function deleteDataTable(): void
+    {
+        $request = new DeleteDataTableRequest($this->apiKey, 'insert_test', [
+            new DeleteColumn('id', 1)
+        ]);
+
+        $response = $this->expertSender->deleteDataTable($request);
+
+        dd($response);
+    }
+
+    /**
+     * Search and count DataTable for rows.
+     */
+    public function countSearchDataTable(): void
+    {
+        $request = new SearchDataTableRequest($this->apiKey, 'orders', [
+            new Where('email', 'm@smid.pl', 'Equals')
+        ]);
+
+        $response = $this->expertSender->countSearchDataTable($request);
+
+        dd($response);
+    }
+
+    /**
+     * Search DataTable for rows.
+     */
+    public function searchDataTable(): void
+    {
+        $request = new SearchDataTableRequest($this->apiKey, 'orders', [
+            new Where('email', 'm@smid.pl', 'Equals'),
+            new Where('value', 100, 'Greater'),
+            new Where('value', 300, 'Lower')
+        ]);
+
+        $request->setLimit(80);
+
+        $response = $this->expertSender->searchDataTable($request);
 
         dd($response);
     }

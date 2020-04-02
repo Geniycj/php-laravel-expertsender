@@ -8,11 +8,17 @@ use ExpertSender\Packages\XMLSerializer;
 use ExpertSender\Abstracts\IExpertSender;
 use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Packages\HttpClient\IHttpClient;
+use ExpertSender\Requests\DataTable\AddDataTableRequest;
 use ExpertSender\Validators\Abstracts\IAddEventValidator;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
+use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
+use ExpertSender\Requests\DataTable\SearchDataTableRequest;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
 use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
 use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
+use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
+use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
+use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
 
 class ExpertSender extends BaseExpertSender implements IExpertSender
 {
@@ -37,19 +43,40 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
     private $getSubscriberListsValidator;
 
     /**
+     * @var \ExpertSender\Validators\IAddDataTableValidator
+     */
+    private $addDataTableValidator;
+
+    /**
+     * @var \ExpertSender\Validators\IDeleteDataTableValidator
+     */
+    private $deleteDataTableValidator;
+
+    /**
+     * @var \ExpertSender\Validators\ISearchDataTableValidator
+     */
+    private $searchDataTableValidator;
+
+    /**
      * Creates new object instance.
      */
     public function __construct(
         IHttpClient $httpClient,
         IAddEventValidator $addEventValidator,
         IAddAndUpdateSubscriberValidator $addAndUpdateSubscriberValidator,
-        IGetSubscriberListsValidator $getSubscriberListsValidator
+        IGetSubscriberListsValidator $getSubscriberListsValidator,
+        IAddDataTableValidator $addDataTableValidator,
+        IDeleteDataTableValidator $deleteDataTableValidator,
+        ISearchDataTableValidator $searchDataTableValidator
     ) {
         parent::__construct();
         $this->httpClient = $httpClient;
         $this->addEventValidator = $addEventValidator;
         $this->addAndUpdateSubscriberValidator = $addAndUpdateSubscriberValidator;
         $this->getSubscriberListsValidator = $getSubscriberListsValidator;
+        $this->addDataTableValidator = $addDataTableValidator;
+        $this->deleteDataTableValidator = $deleteDataTableValidator;
+        $this->searchDataTableValidator = $searchDataTableValidator;
         $this->httpClient->setBaseUrl($this->getApiUrl());
     }
 
@@ -116,4 +143,98 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         return false;
     }
 
+    /**
+     * Add datatable rows.
+     *
+     * @param \ExpertSender\Requests\DataTable\AddDataTableRequest
+     * @return bool
+     */
+    public function addDataTable(AddDataTableRequest $request): bool
+    {
+        $this->addDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesAddRow, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete datatable rows.
+     *
+     * @param \ExpertSender\Requests\DataTable\DeleteDataTableRequest
+     * @return bool
+     */
+    public function deleteDataTable(DeleteDataTableRequest $request): bool
+    {
+        $this->deleteDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesDeleteRow, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Search datatable for rows.
+     *
+     * @param \ExpertSender\Requests\DataTable\SearchDataTableRequest
+     * @return int
+     */
+    public function countSearchDataTable(SearchDataTableRequest $request): int
+    {
+        $this->searchDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesGetDataCount, [], $request);
+        });
+
+        if (!$response->getHttpResponseCode() || $response->getHttpResponseCode() > 299) {
+            return 0;
+        }
+
+        $responseXml = simplexml_load_string($response->getBody());
+
+        if (!isset($responseXml->Count)) {
+            return 0;
+        }
+
+        return (int)$responseXml->Count;
+    }
+
+    /**
+     * Search datatable for rows.
+     * It will return string in text/csv format.
+     *
+     * @param \ExpertSender\Requests\DataTable\SearchDataTableRequest
+     * @return string
+     */
+    public function searchDataTable(SearchDataTableRequest $request): string
+    {
+        $this->searchDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesGetData, [], $request);
+        });
+
+        return $response->getBody();
+    }
 }

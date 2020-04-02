@@ -12,5 +12,7 @@ class Endpoint
 
     public static $dataTablesGetDataCount = 'Api/DataTablesGetDataCount/';
 
+    public static $dataTablesGetData = 'Api/DataTablesGetData/';
+
     public static $workflowCustomEvents = 'Api/WorkflowCustomEvents/';
 }
