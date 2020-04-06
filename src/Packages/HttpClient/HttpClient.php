@@ -104,7 +104,6 @@ class HttpClient implements IHttpClient
                 'verify' => false
             ]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            dd($e->getMessage());
             throw new BadRequestHttpException($e->getMessage(), $e->getPrevious(), $e->getCode());
         }
 
