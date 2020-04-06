@@ -11,18 +11,20 @@ use ExpertSender\Packages\HttpClient\HttpClient;
 use ExpertSender\Abstracts\IExpertSenderExamples;
 use ExpertSender\Packages\HttpClient\IHttpClient;
 use ExpertSender\Packages\HttpClient\HttpResponse;
+use ExpertSender\Validators\AddDataTableValidator;
 use ExpertSender\Packages\HttpClient\IHttpResponse;
+use ExpertSender\Validators\DeleteDataTableValidator;
+use ExpertSender\Validators\SearchDataTableValidator;
+use ExpertSender\Validators\DeleteSubscriberValidator;
 use ExpertSender\Validators\GetSubscriberListsValidator;
 use ExpertSender\Validators\Abstracts\IAddEventValidator;
 use ExpertSender\Validators\AddAndUpdateSubscriberValidator;
-use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
-use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
 use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
 use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
 use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
-use ExpertSender\Validators\AddDataTableValidator;
-use ExpertSender\Validators\DeleteDataTableValidator;
-use ExpertSender\Validators\SearchDataTableValidator;
+use ExpertSender\Validators\Abstracts\IDeleteSubscriberValidator;
+use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
+use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
 
 class ExpertSenderServiceProvider extends ServiceProvider
 {
@@ -56,6 +58,7 @@ class ExpertSenderServiceProvider extends ServiceProvider
         $this->app->bind(IAddDataTableValidator::class, AddDataTableValidator::class);
         $this->app->bind(IDeleteDataTableValidator::class, DeleteDataTableValidator::class);
         $this->app->bind(ISearchDataTableValidator::class, SearchDataTableValidator::class);
+        $this->app->bind(IDeleteSubscriberValidator::class, DeleteSubscriberValidator::class);
 
         // HttpClient
         $this->app->bind(IHttpResponse::class, HttpResponse::class);
@@ -77,6 +80,8 @@ class ExpertSenderServiceProvider extends ServiceProvider
             'IAddAndUpdateSubscriberValidator',
             'IAddDataTableValidator',
             'IDeleteDataTableValidator',
+            'ISearchDataTableValidator',
+            'IDeleteSubscriberValidator',
             'IHttpResponse',
             'IHttpClient'
         ];

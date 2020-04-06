@@ -12,4 +12,5 @@ interface IHttpClient
     public function send($method, $uri, array $headers, $body);
     public function sendPost($uri, array $headers, $body);
     public function sendGet($uri, array $headers, $body);
+    public function sendDelete($uri, array $headers, $body);
 }

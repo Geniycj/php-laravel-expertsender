@@ -19,6 +19,7 @@ use ExpertSender\Requests\DataTable\SearchDataTableRequest;
 use ExpertSender\Requests\Subscriber\AddAndUpdate\Property;
 use ExpertSender\Requests\Subscriber\AddAndUpdate\SubscriberData;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
+use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
 
 class ExpertSenderExamples implements IExpertSenderExamples
 {
@@ -68,6 +69,21 @@ class ExpertSenderExamples implements IExpertSenderExamples
         );
 
         $response = $this->expertSender->addAndUpdateSubscriber($request);
+
+        dd($response);
+    }
+
+    /**
+     * Delete ExpertSender subscriber from list in business unit.
+     */
+    public function deleteSubscriber(): void
+    {
+        $request = new DeleteSubscriberRequest(
+            $this->apiKey,
+            'm@smid.pl'
+        );
+
+        $response = $this->expertSender->deleteSubscriber($request);
 
         dd($response);
     }

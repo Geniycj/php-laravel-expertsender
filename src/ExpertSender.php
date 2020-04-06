@@ -13,12 +13,14 @@ use ExpertSender\Validators\Abstracts\IAddEventValidator;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
 use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
 use ExpertSender\Requests\DataTable\SearchDataTableRequest;
+use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
+use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
+use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
+use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
 use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
 use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
-use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
-use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
-use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
+use ExpertSender\Validators\Abstracts\IDeleteSubscriberValidator;
 
 class ExpertSender extends BaseExpertSender implements IExpertSender
 {
@@ -58,6 +60,11 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
     private $searchDataTableValidator;
 
     /**
+     * @var \ExpertSender\Validators\IDeleteSubscriberValidator
+     */
+    private $deleteSubscriberValidator;
+
+    /**
      * Creates new object instance.
      */
     public function __construct(
@@ -67,7 +74,8 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         IGetSubscriberListsValidator $getSubscriberListsValidator,
         IAddDataTableValidator $addDataTableValidator,
         IDeleteDataTableValidator $deleteDataTableValidator,
-        ISearchDataTableValidator $searchDataTableValidator
+        ISearchDataTableValidator $searchDataTableValidator,
+        IDeleteSubscriberValidator $deleteSubscriberValidator
     ) {
         parent::__construct();
         $this->httpClient = $httpClient;
@@ -77,6 +85,7 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         $this->addDataTableValidator = $addDataTableValidator;
         $this->deleteDataTableValidator = $deleteDataTableValidator;
         $this->searchDataTableValidator = $searchDataTableValidator;
+        $this->deleteSubscriberValidator = $deleteSubscriberValidator;
         $this->httpClient->setBaseUrl($this->getApiUrl());
     }
 
@@ -111,6 +120,27 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
 
         $response = $this->dispatch(function () use ($request) {
             return $this->httpClient->sendPost(Endpoint::$subscribers, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get subscriber lists in bussiness unit.
+     *
+     * @param \ExpertSender\Requests\Subscriber\DeleteSubscriberRequest
+     * @return bool
+     */
+    public function deleteSubscriber(DeleteSubscriberRequest $request): bool
+    {
+        $this->deleteSubscriberValidator->validate($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendDelete(Endpoint::$subscribers . '?' . http_build_query($request), [], null);
         });
 
         if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {

@@ -104,6 +104,7 @@ class HttpClient implements IHttpClient
                 'verify' => false
             ]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            dd($e->getMessage());
             throw new BadRequestHttpException($e->getMessage(), $e->getPrevious(), $e->getCode());
         }
 
@@ -136,6 +137,18 @@ class HttpClient implements IHttpClient
     public function sendGet($uri, array $headers, $body)
     {
         return $this->send('get', $uri, $headers, $body);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $headers
+     * @param $body
+     * @return IHttpResponse
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     */
+    public function sendDelete($uri, array $headers, $body)
+    {
+        return $this->send('delete', $uri, $headers, $body);
     }
 
     /**
