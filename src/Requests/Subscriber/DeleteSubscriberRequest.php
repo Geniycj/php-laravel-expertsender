@@ -10,17 +10,21 @@ class DeleteSubscriberRequest extends BaseRequest
     public $apiKey;
     /** @var string */
     public $email;
+    /** @var int */
+    public $listId;
 
     /**
      * Creates new DeleteSubscriptionRequest object instance.
      *
      * @param string $id
      * @param string $email
+     * @param int $listId
      */
-    public function __construct(string $apiKey, string $email)
+    public function __construct(string $apiKey, string $email, ?int $listId = null)
     {
         $this->apiKey = $apiKey;
         $this->email = $email;
+        $this->listId = $listId;
     }
 
     /**
