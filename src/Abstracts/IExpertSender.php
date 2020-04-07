@@ -3,6 +3,7 @@
 namespace ExpertSender\Abstracts;
 
 use SimpleXMLElement;
+use ExpertSender\Requests\Unit\GetListsRequest;
 use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Requests\DataTable\AddDataTableRequest;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
@@ -13,6 +14,7 @@ use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
 
 interface IExpertSender
 {
+    public function getBusinessUnitLists(GetListsRequest $request): SimpleXMLElement;
     public function getSubscriberLists(GetSubscriberRequest $request): SimpleXMLElement;
     public function addAndUpdateSubscriber(AddAndUpdateSubscriberRequest $request): bool;
     public function deleteSubscriber(DeleteSubscriberRequest $request): bool;

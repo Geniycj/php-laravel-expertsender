@@ -20,6 +20,7 @@ use ExpertSender\Requests\Subscriber\AddAndUpdate\Property;
 use ExpertSender\Requests\Subscriber\AddAndUpdate\SubscriberData;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
 use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
+use ExpertSender\Requests\Unit\GetListsRequest;
 
 class ExpertSenderExamples implements IExpertSenderExamples
 {
@@ -40,6 +41,28 @@ class ExpertSenderExamples implements IExpertSenderExamples
         IExpertSender $expertSender
     ) {
         $this->expertSender = $expertSender;
+    }
+
+    /**
+     * Set api key for tests.
+     *
+     * @param string $apiKey
+     */
+    public function setApiKey(string $apiKey): void
+    {
+        $this->apiKey = $apiKey;
+    }
+
+    /**
+     * Get business unit lists.
+     */
+    public function getBusinessUnitLists(): void
+    {
+        $request = new GetListsRequest($this->apiKey);
+
+        $response = $this->expertSender->getBusinessUnitLists($request);
+
+        dd($response);
     }
 
     /**

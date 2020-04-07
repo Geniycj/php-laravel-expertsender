@@ -18,9 +18,11 @@ use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
 use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
 use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
+use ExpertSender\Requests\Unit\GetListsRequest;
 use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
 use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
 use ExpertSender\Validators\Abstracts\IDeleteSubscriberValidator;
+use ExpertSender\Validators\Abstracts\IGetListsValidator;
 
 class ExpertSender extends BaseExpertSender implements IExpertSender
 {
@@ -65,6 +67,11 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
     private $deleteSubscriberValidator;
 
     /**
+     * @var \ExpertSender\Validators\IGetListsValidator
+     */
+    private $getListsValidator;
+
+    /**
      * Creates new object instance.
      */
     public function __construct(
@@ -75,7 +82,8 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         IAddDataTableValidator $addDataTableValidator,
         IDeleteDataTableValidator $deleteDataTableValidator,
         ISearchDataTableValidator $searchDataTableValidator,
-        IDeleteSubscriberValidator $deleteSubscriberValidator
+        IDeleteSubscriberValidator $deleteSubscriberValidator,
+        IGetListsValidator $getListsValidator
     ) {
         parent::__construct();
         $this->httpClient = $httpClient;
@@ -86,7 +94,25 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         $this->deleteDataTableValidator = $deleteDataTableValidator;
         $this->searchDataTableValidator = $searchDataTableValidator;
         $this->deleteSubscriberValidator = $deleteSubscriberValidator;
+        $this->getListsValidator = $getListsValidator;
         $this->httpClient->setBaseUrl($this->getApiUrl());
+    }
+
+    /**
+     * Get business unit lists.
+     *
+     * @param \ExpertSender\Requests\List\GetListsRequest
+     * @return SimpleXMLElement
+     */
+    public function getBusinessUnitLists(GetListsRequest $request): SimpleXMLElement
+    {
+        $this->getListsValidator->validate($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendGet(Endpoint::$lists . '?' . http_build_query($request), [], null);
+        });
+
+        return simplexml_load_string($response->getBody());
     }
 
     /**
