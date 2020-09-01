@@ -38,7 +38,7 @@ class XMLSerializer
 
             foreach ($array as $key => $value) {
 
-                if (!$value) {
+                if ($value == '') {
                     continue;
                 }
 

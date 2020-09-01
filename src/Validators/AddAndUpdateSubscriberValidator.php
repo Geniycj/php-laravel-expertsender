@@ -61,7 +61,7 @@ class AddAndUpdateSubscriberValidator implements IAddAndUpdateSubscriberValidato
                     throw new ExpertSenderException(Error::$propertyIdFieldIsNotInt);
                 }
 
-                if (!$properties->value) {
+                if (!isset($properties->value) || $properties->value == '') {
                     throw new ExpertSenderException(Error::$missingPropertyValue);
                 }
 
