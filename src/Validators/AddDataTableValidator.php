@@ -51,7 +51,7 @@ class AddDataTableValidator implements IAddDataTableValidator
                     throw new ExpertSenderException(Error::$missingColumnName);
                 }
 
-                if (!$column->value) {
+                if (!isset($column->value) || $column->value == '') {
                     throw new ExpertSenderException(Error::$missingColumnValue);
                 }
 
