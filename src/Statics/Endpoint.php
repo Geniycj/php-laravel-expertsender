@@ -10,6 +10,10 @@ class Endpoint
 
     public static $dataTablesDeleteRow = 'Api/DataTablesDeleteRow/';
 
+    public static $dataTablesAddMultiRows = 'Api/DataTablesAddMultipleRows/';
+
+    public static $dataTablesUpdateMultiRows = 'Api/DataTablesUpdateMultipleRows/';
+
     public static $dataTablesGetDataCount = 'Api/DataTablesGetDataCount/';
 
     public static $dataTablesGetData = 'Api/DataTablesGetData/';

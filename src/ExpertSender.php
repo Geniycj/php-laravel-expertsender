@@ -6,23 +6,25 @@ use SimpleXMLElement;
 use ExpertSender\Statics\Endpoint;
 use ExpertSender\Packages\XMLSerializer;
 use ExpertSender\Abstracts\IExpertSender;
+use ExpertSender\Requests\Unit\GetListsRequest;
 use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Packages\HttpClient\IHttpClient;
 use ExpertSender\Requests\DataTable\AddDataTableRequest;
+use ExpertSender\Validators\Abstracts\IGetListsValidator;
 use ExpertSender\Validators\Abstracts\IAddEventValidator;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
 use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
 use ExpertSender\Requests\DataTable\SearchDataTableRequest;
+use ExpertSender\Requests\DataTable\AddMultiDataTableRequest;
 use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
 use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
+use ExpertSender\Validators\Abstracts\IMultiDataTableValidator;
 use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
 use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
+use ExpertSender\Validators\Abstracts\IDeleteSubscriberValidator;
 use ExpertSender\Requests\Subscriber\AddAndUpdateSubscriberRequest;
-use ExpertSender\Requests\Unit\GetListsRequest;
 use ExpertSender\Validators\Abstracts\IGetSubscriberListsValidator;
 use ExpertSender\Validators\Abstracts\IAddAndUpdateSubscriberValidator;
-use ExpertSender\Validators\Abstracts\IDeleteSubscriberValidator;
-use ExpertSender\Validators\Abstracts\IGetListsValidator;
 
 class ExpertSender extends BaseExpertSender implements IExpertSender
 {
@@ -50,6 +52,11 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
      * @var \ExpertSender\Validators\IAddDataTableValidator
      */
     private $addDataTableValidator;
+
+    /**  
+     * @var \ExpertSender\Validators\IMultiDataTableValidator
+     */
+    private $multiDataTableValidator;
 
     /**
      * @var \ExpertSender\Validators\IDeleteDataTableValidator
@@ -83,7 +90,8 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         IDeleteDataTableValidator $deleteDataTableValidator,
         ISearchDataTableValidator $searchDataTableValidator,
         IDeleteSubscriberValidator $deleteSubscriberValidator,
-        IGetListsValidator $getListsValidator
+        IGetListsValidator $getListsValidator,
+        IMultiDataTableValidator $multiDataTableValidator
     ) {
         parent::__construct();
         $this->httpClient = $httpClient;
@@ -95,6 +103,7 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         $this->searchDataTableValidator = $searchDataTableValidator;
         $this->deleteSubscriberValidator = $deleteSubscriberValidator;
         $this->getListsValidator = $getListsValidator;
+        $this->multiDataTableValidator = $multiDataTableValidator;
         $this->httpClient->setBaseUrl($this->getApiUrl());
     }
 
@@ -213,6 +222,52 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
 
         $response = $this->dispatch(function () use ($request) {
             return $this->httpClient->sendPost(Endpoint::$dataTablesAddRow, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Add multi datatable rows.
+     *
+     * @param \ExpertSender\Requests\DataTable\AddMultiDataTableRequest
+     * @return bool
+     */
+    public function addMultiDataTable(AddMultiDataTableRequest $request): bool
+    {
+        $this->multiDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesAddMultiRows, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Update multi datatable rows.
+     *
+     * @param \ExpertSender\Requests\DataTable\AddMultiDataTableRequest
+     * @return bool
+     */
+    public function updateMultiDataTable(AddMultiDataTableRequest $request): bool
+    {
+        $this->multiDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesUpdateMultiRows, [], $request);
         });
 
         if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {

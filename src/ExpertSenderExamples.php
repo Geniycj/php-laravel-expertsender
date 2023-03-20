@@ -13,6 +13,7 @@ use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Abstracts\IExpertSenderExamples;
 use ExpertSender\Requests\DataTable\Search\Where;
 use ExpertSender\Requests\DataTable\AddDataTableRequest;
+use ExpertSender\Requests\DataTable\AddMultiDataTableRequest;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
 use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
 use ExpertSender\Requests\DataTable\SearchDataTableRequest;
@@ -160,6 +161,50 @@ class ExpertSenderExamples implements IExpertSenderExamples
         ]);
 
         $response = $this->expertSender->addDataTable($request);
+
+        dd($response);
+    }
+
+    /**
+     * Add multi DataTable.
+     */
+    public function addMuliDataTable(): void
+    {
+        $request = new AddMultiDataTableRequest($this->apiKey, 'insert_test', [
+            new Row([
+                new AddColumn('id', 1),
+                new AddColumn('email', 'm@smid.pl'),
+                new AddColumn('date', Carbon::now())
+            ]),
+            new Row([
+                new AddColumn('id', 2),
+                new AddColumn('email', 'kontakt@smid.pl'),
+                new AddColumn('date', Carbon::now())
+            ])
+        ]);
+
+        $response = $this->expertSender->addMultiDataTable($request);
+
+        dd($response);
+    }
+
+    /**
+     * Update multi DataTable.
+     */
+    public function updateMuliDataTable(): void
+    {
+        $request = new AddMultiDataTableRequest($this->apiKey, 'insert_test', [
+            new Row([
+                new AddColumn('id', 1),
+                new AddColumn('date', Carbon::now())
+            ], [new AddColumn('email', 'm@smid.pl')]),
+            new Row([
+                new AddColumn('id', 2),
+                new AddColumn('date', Carbon::now())
+            ], [new AddColumn('email', 'kontakt@smid.pl')])
+        ]);
+
+        $response = $this->expertSender->updateMultiDataTable($request);
 
         dd($response);
     }

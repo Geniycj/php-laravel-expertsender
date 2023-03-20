@@ -6,6 +6,9 @@ use ExpertSender\Requests\BaseRequest;
 
 class Row extends BaseRequest
 {
+    /** @var ?array */
+    public $primaryKeyColumns;
+    
     /** @var array */
     public $columns;
 
@@ -14,8 +17,10 @@ class Row extends BaseRequest
      *
      * @param array $columns
      */
-    public function __construct(array $columns)
+    public function __construct(array $columns, ?array $primaryKeyColumns = null)
     {
+        $this->primaryKeyColumns = $primaryKeyColumns;
+        
         $this->columns = $columns;
     }
 }
