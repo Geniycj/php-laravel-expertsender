@@ -62,6 +62,7 @@ class ExpertSenderServiceProvider extends ServiceProvider
         $this->app->bind(ISearchDataTableValidator::class, SearchDataTableValidator::class);
         $this->app->bind(IDeleteSubscriberValidator::class, DeleteSubscriberValidator::class);
         $this->app->bind(IGetListsValidator::class, GetListsValidator::class);
+        $this->app->bind(IMultiDataTableValidator::class, MultiDataTableValidator::class);
 
         // HttpClient
         $this->app->bind(IHttpResponse::class, HttpResponse::class);
