@@ -10,14 +10,16 @@ use ExpertSender\Requests\Unit\GetListsRequest;
 use ExpertSender\Requests\Event\AddEventRequest;
 use ExpertSender\Packages\HttpClient\IHttpClient;
 use ExpertSender\Requests\DataTable\AddDataTableRequest;
-use ExpertSender\Validators\Abstracts\IGetListsValidator;
 use ExpertSender\Validators\Abstracts\IAddEventValidator;
+use ExpertSender\Validators\Abstracts\IGetListsValidator;
+use ExpertSender\Requests\DataTable\ClearDataTableRequest;
 use ExpertSender\Requests\Subscriber\GetSubscriberRequest;
 use ExpertSender\Requests\DataTable\DeleteDataTableRequest;
 use ExpertSender\Requests\DataTable\SearchDataTableRequest;
 use ExpertSender\Requests\DataTable\AddMultiDataTableRequest;
-use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
 use ExpertSender\Requests\Subscriber\DeleteSubscriberRequest;
+use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
+use ExpertSender\Validators\Abstracts\IClearDataTableValidator;
 use ExpertSender\Validators\Abstracts\IMultiDataTableValidator;
 use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
 use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
@@ -64,6 +66,11 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
     private $deleteDataTableValidator;
 
     /**
+     * @var \ExpertSender\Validators\IClearDataTableValidator
+     */
+    private $clearDataTableValidator;
+
+    /**
      * @var \ExpertSender\Validators\ISearchDataTableValidator
      */
     private $searchDataTableValidator;
@@ -88,6 +95,7 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         IGetSubscriberListsValidator $getSubscriberListsValidator,
         IAddDataTableValidator $addDataTableValidator,
         IDeleteDataTableValidator $deleteDataTableValidator,
+        IClearDataTableValidator $clearDataTableValidator,
         ISearchDataTableValidator $searchDataTableValidator,
         IDeleteSubscriberValidator $deleteSubscriberValidator,
         IGetListsValidator $getListsValidator,
@@ -100,6 +108,7 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
         $this->getSubscriberListsValidator = $getSubscriberListsValidator;
         $this->addDataTableValidator = $addDataTableValidator;
         $this->deleteDataTableValidator = $deleteDataTableValidator;
+        $this->clearDataTableValidator = $clearDataTableValidator;
         $this->searchDataTableValidator = $searchDataTableValidator;
         $this->deleteSubscriberValidator = $deleteSubscriberValidator;
         $this->getListsValidator = $getListsValidator;
@@ -237,9 +246,9 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
      * @param \ExpertSender\Requests\DataTable\AddMultiDataTableRequest
      * @return bool
      */
-    public function addMultiDataTable(AddMultiDataTableRequest $request): bool
+    public function addMultiDataTable(AddMultiDataTableRequest $request, $allowEmptyValues = false): bool
     {
-        $this->multiDataTableValidator->validate($request);
+        $this->multiDataTableValidator->validate($request, $allowEmptyValues);
 
         $request = XMLSerializer::generateValidXmlFromObject($request);
 
@@ -260,9 +269,9 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
      * @param \ExpertSender\Requests\DataTable\AddMultiDataTableRequest
      * @return bool
      */
-    public function updateMultiDataTable(AddMultiDataTableRequest $request): bool
+    public function updateMultiDataTable(AddMultiDataTableRequest $request, $allowEmptyValues = false): bool
     {
-        $this->multiDataTableValidator->validate($request);
+        $this->multiDataTableValidator->validate($request, $allowEmptyValues);
 
         $request = XMLSerializer::generateValidXmlFromObject($request);
 
@@ -291,6 +300,29 @@ class ExpertSender extends BaseExpertSender implements IExpertSender
 
         $response = $this->dispatch(function () use ($request) {
             return $this->httpClient->sendPost(Endpoint::$dataTablesDeleteRow, [], $request);
+        });
+
+        if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Clear datatable.
+     *
+     * @param \ExpertSender\Requests\DataTable\ClearDataTableRequest
+     * @return bool
+     */
+    public function clearDataTable(ClearDataTableRequest $request): bool
+    {
+        $this->clearDataTableValidator->validate($request);
+
+        $request = XMLSerializer::generateValidXmlFromObject($request);
+
+        $response = $this->dispatch(function () use ($request) {
+            return $this->httpClient->sendPost(Endpoint::$dataTablesClearTable, [], $request);
         });
 
         if ($response->getHttpResponseCode() && $response->getHttpResponseCode() < 299) {

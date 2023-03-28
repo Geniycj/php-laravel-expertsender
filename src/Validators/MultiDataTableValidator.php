@@ -17,7 +17,7 @@ class MultiDataTableValidator implements IMultiDataTableValidator
      * @param \ExpertSender\Requests\DataTable\AddDataTableRequest
      * @return void
      */
-    public function validate(AddMultiDataTableRequest $request)
+    public function validate(AddMultiDataTableRequest $request, $allowEmptyValues = false)
     {
         if (!$request->apiKey) {
             throw new ExpertSenderException(Error::$missingApiKey);
@@ -51,7 +51,7 @@ class MultiDataTableValidator implements IMultiDataTableValidator
                     throw new ExpertSenderException(Error::$missingColumnName);
                 }
 
-                if (!isset($column->value) || $column->value == '') {
+                if (!isset($column->value) || (!$allowEmptyValues && $column->value == '')) {
                     throw new ExpertSenderException(Error::$missingColumnValue);
                 }
 

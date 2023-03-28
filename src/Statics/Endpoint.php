@@ -18,6 +18,8 @@ class Endpoint
 
     public static $dataTablesGetData = 'Api/DataTablesGetData/';
 
+    public static $dataTablesClearTable = 'Api/DataTablesClearTable/';
+
     public static $workflowCustomEvents = 'Api/WorkflowCustomEvents/';
 
     public static $lists = 'Api/Lists/';
