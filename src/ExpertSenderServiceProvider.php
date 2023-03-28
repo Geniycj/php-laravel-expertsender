@@ -14,6 +14,7 @@ use ExpertSender\Packages\HttpClient\IHttpClient;
 use ExpertSender\Packages\HttpClient\HttpResponse;
 use ExpertSender\Validators\AddDataTableValidator;
 use ExpertSender\Packages\HttpClient\IHttpResponse;
+use ExpertSender\Validators\ClearDataTableValidator;
 use ExpertSender\Validators\MultiDataTableValidator;
 use ExpertSender\Validators\DeleteDataTableValidator;
 use ExpertSender\Validators\SearchDataTableValidator;
@@ -23,6 +24,7 @@ use ExpertSender\Validators\Abstracts\IAddEventValidator;
 use ExpertSender\Validators\Abstracts\IGetListsValidator;
 use ExpertSender\Validators\AddAndUpdateSubscriberValidator;
 use ExpertSender\Validators\Abstracts\IAddDataTableValidator;
+use ExpertSender\Validators\Abstracts\IClearDataTableValidator;
 use ExpertSender\Validators\Abstracts\IMultiDataTableValidator;
 use ExpertSender\Validators\Abstracts\IDeleteDataTableValidator;
 use ExpertSender\Validators\Abstracts\ISearchDataTableValidator;
@@ -65,6 +67,7 @@ class ExpertSenderServiceProvider extends ServiceProvider
         $this->app->bind(IDeleteSubscriberValidator::class, DeleteSubscriberValidator::class);
         $this->app->bind(IGetListsValidator::class, GetListsValidator::class);
         $this->app->bind(IMultiDataTableValidator::class, MultiDataTableValidator::class);
+        $this->app->bind(IClearDataTableValidator::class, ClearDataTableValidator::class);
 
         // HttpClient
         $this->app->bind(IHttpResponse::class, HttpResponse::class);
